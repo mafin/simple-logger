@@ -1,0 +1,10 @@
+/README.md export-ignore
+/.editorconfig export-ignore
+/ecs.php export-ignore
+/phpstan.neon export-ignore
+/phpunit.xml export-ignore
+/.gitignore export-ignore
+/examples export-ignore
+/tests export-ignore
+/.gitignore export-ignore
+/CHANGELOG.md export-ignore

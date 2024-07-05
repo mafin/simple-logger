@@ -1,0 +1,58 @@
+{
+  "name": "mafin/simple-logger",
+  "description": "A simple PSR-3 compliant logging utility for PHP.",
+  "type": "library",
+  "require": {
+    "php": "^8.3",
+    "psr/log": "^3.0"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.59",
+    "php-parallel-lint/php-parallel-lint": "^1.4",
+    "phpstan/phpstan": "^1.11",
+    "phpunit/phpunit": "^11.2",
+    "slevomat/coding-standard": "^8.15",
+    "symplify/easy-coding-standard": "^12.1"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Mafin\\SimpleLogger\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mafin\\SimpleLogger\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Petr Jenin",
+      "email": "petr.enin@gmail.com"
+    }
+  ],
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": "@php vendor/bin/phpunit --configuration phpunit.xml",
+    "ecs": "@php vendor/bin/ecs check --fix src/ tests/",
+    "ecs-dry": "@php vendor/bin/ecs check src/ tests/",
+    "phplint": "@php vendor/bin/parallel-lint -j 10 --exclude var --exclude vendor --exclude bin .",
+    "phpstan": "php vendor/bin/phpstan analyse src --level max --configuration=./phpstan.neon --memory-limit=2048M",
+    "phpstan-baseline": "php vendor/bin/phpstan analyse src --level max --configuration=./phpstan.neon --generate-baseline --memory-limit=2048M",
+    "static-analysis": [
+      "@phplint",
+      "@composer dump-autoload --classmap-authoritative",
+      "@ecs",
+      "@phpstan"
+    ],
+    "check": [
+      "@static-analysis",
+      "@test"
+    ]
+  }
+}

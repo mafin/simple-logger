@@ -1,0 +1,15 @@
+includes:
+
+parameters:
+    excludePaths:
+
+    checkUninitializedProperties: true
+    reportUnmatchedIgnoredErrors: true
+
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
+
+    parallel:
+        processTimeout: 3000.0
+        maximumNumberOfProcesses: 6
