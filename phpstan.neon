@@ -7,8 +7,6 @@ parameters:
     reportUnmatchedIgnoredErrors: true
 
     ignoreErrors:
-        -
-            identifier: missingType.iterableValue
 
     parallel:
         processTimeout: 3000.0

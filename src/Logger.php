@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Mafin\SimpleLogger;
 
+use Mafin\SimpleLogger\Contract\LogFormatterInterface;
+use Mafin\SimpleLogger\Contract\LogWriterInterface;
+use Mafin\SimpleLogger\Infrastructure\DefaultLogFormatter;
+use Mafin\SimpleLogger\Infrastructure\FileLogWriter;
 use Psr\Log\AbstractLogger;
+use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Stringable;
 
-class Logger extends AbstractLogger
+final class Logger extends AbstractLogger
 {
     protected const LEVELS = [
         LogLevel::EMERGENCY => 0,
@@ -21,58 +26,45 @@ class Logger extends AbstractLogger
         LogLevel::DEBUG => 7,
     ];
 
+    private readonly LogWriterInterface $writer;
+    private readonly LogFormatterInterface $formatter;
+
     public function __construct(
-        public readonly string $logFile,
-        public readonly string $logLevel = LogLevel::DEBUG,
+        string|LogWriterInterface $logFileOrWriter,
+        private readonly string $logLevel = LogLevel::DEBUG,
+        ?LogFormatterInterface $formatter = null,
     ) {
+        // Backward compatibility: accept string path or LogWriter instance
+        $this->writer = is_string($logFileOrWriter)
+            ? new FileLogWriter($logFileOrWriter)
+            : $logFileOrWriter;
+
+        $this->formatter = $formatter ?? new DefaultLogFormatter();
     }
 
     /**
      * @param string $level
+     * @param array<string, mixed> $context
      */
     public function log(
         $level,
         string|Stringable $message,
         array $context = [],
     ): void {
-        if (!isset(self::LEVELS[$level])) {
-            throw new \Psr\Log\InvalidArgumentException('Invalid log level: ' . $level);
+        if (isset(self::LEVELS[$level]) === false) {
+            throw new InvalidArgumentException('Invalid log level: ' . $level);
         }
 
-        $message = $this->getMessageWithContext($message);
-
-        if ($this->shouldLog($level)) {
-            $timestamp = date('Y-m-d H:i:s');
-            $message = $this->interpolate($message, $context);
-            $logMessage = "[$timestamp] [$level] $message" . PHP_EOL;
-            file_put_contents($this->logFile, $logMessage, FILE_APPEND);
+        if ($this->shouldLog($level) === false) {
+            return;
         }
+
+        $formattedMessage = $this->formatter->format($level, $message, $context);
+        $this->writer->write($formattedMessage);
     }
 
     protected function shouldLog(string $level): bool
     {
         return self::LEVELS[$level] <= self::LEVELS[$this->logLevel];
-    }
-
-    protected function interpolate(
-        string $message,
-        array $context = [],
-    ): string {
-        $replace = array_map(
-            static fn ($key, $val) => ["{{$key}}" => $val],
-            array_keys($context),
-            $context,
-        );
-
-        return strtr($message, $replace);
-    }
-
-    private function getMessageWithContext(string|Stringable $message): string
-    {
-        if ($message instanceof Stringable) {
-            return $message->__toString();
-        }
-
-        return $message;
     }
 }

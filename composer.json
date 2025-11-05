@@ -3,16 +3,16 @@
   "description": "A simple PSR-3 compliant logging utility for PHP.",
   "type": "library",
   "require": {
-    "php": "^8.3",
+    "php": "^8.4",
     "psr/log": "^3.0"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.59",
+    "friendsofphp/php-cs-fixer": "^3.89",
     "php-parallel-lint/php-parallel-lint": "^1.4",
-    "phpstan/phpstan": "^1.11",
-    "phpunit/phpunit": "^11.2",
-    "slevomat/coding-standard": "^8.15",
-    "symplify/easy-coding-standard": "^12.1"
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^12.4",
+    "slevomat/coding-standard": "^8.24",
+    "symplify/easy-coding-standard": "^12.6"
   },
   "license": "MIT",
   "autoload": {
